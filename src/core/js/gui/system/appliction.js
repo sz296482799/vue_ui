@@ -47,6 +47,8 @@ var Appliction = (
 
             computed = Vuex.mapState(["appliction"]);
 
+            isStart = true;
+
             vue = new Vue({
                 store: store,
                 router: router,
@@ -57,8 +59,6 @@ var Appliction = (
                 },
             });
             vue.$mount('#' + id);
-
-            isStart = true;
         };
 
         var setState = function(name, value) {
@@ -111,12 +111,10 @@ var Appliction = (
 
             var component;
             if(isString(template))
-                component = { template: template,  computed:{_activity_item_name: function() {return path;}}};
-            else {
-                if(!isObject(template.computed))
-                    template.computed = new Object();
-                template.computed['_activity_path'] = function() {return path;};
-                component = template;
+                component = { template: template,  data: function() {return {_activity_path: path}}};
+            else if(isObject(template)) {
+                Vue_Contorller.addVar(template, "_activity_path", path);
+                component = Vue_Contorller.build(template);
             }
 
             var route = {
@@ -170,7 +168,7 @@ var Appliction = (
             addActivity: setRoute,
             getActivity: getActivity,
             tiggerFunc: tiggerFunc, 
-            getID: getID,
+            requestID: getID,
 
             // key event
             onAppKeyUp: onAppKeyUp,

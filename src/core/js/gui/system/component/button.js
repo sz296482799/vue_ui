@@ -1,38 +1,29 @@
 'use strict'
 
 function Button(text, cssObj) {
+    this.extends = Vue_Contorller.build(new GroupView());
     this.text = text;
     this.cssObj = cssObj;
-
-    GroupView.call(this);
 }
-extend(Button, GroupView);
 
 Button.prototype.onBuild = function() {
-    this.variables.itext = this.text;
-    this.variables.canFocus = true;
-    this.variables.isFocus = false;
-    this.variables.iCssObj = this.cssObj;
-    this.variables.mCssObj = {focus: "item_button_focus", nofocus: "item_button_nofocus"};
 
-    this.addMethod("getElement", function() {
-        return $("#button" + this.aid);
+    Vue_Contorller.addVar(this, "itext", this.text);
+    Vue_Contorller.addVar(this, "canFocus", true);
+    Vue_Contorller.addVar(this, "isFocus", false);
+    Vue_Contorller.addVar(this, "iCssObj", this.cssObj);
+    Vue_Contorller.addVar(this, "mCssObj", {focus: "item_button_focus", nofocus: "item_button_nofocus"});
+
+    Vue_Contorller.addMethod(this, "getElement", function() {
+        return $("#" + this.vid);
     });
 
-    this.addComputed("sClass", function () {
+    Vue_Contorller.addComputed(this, "sClass", function () {
         if(this.isFocus)
             return (this.iCssObj && this.iCssObj.focus) || this.mCssObj.focus;
         else
             return (this.iCssObj && this.iCssObj.nofocus) || this.mCssObj.nofocus;
     });
 
-    this.appendHtml('<div id=\"button' + this.variables.aid + '\" v-text="itext" :class="sClass"></div>');
-}
-
-
-function testButton(text, cssObj) {
-    this.extends = new Button(text, cssObj);
-    this.created = function() {
-        console.log("testButton created");
-    };
+    Vue_Contorller.addElement(this, '<div :id="vid" v-text="itext" :class="sClass"></div>');
 }

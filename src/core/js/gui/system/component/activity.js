@@ -1,6 +1,13 @@
 'use strict'
 
 function Activity() {
-    GroupView.call(this);
+    this.extends = Vue_Contorller.build(new GroupView());
 }
-extend(Activity, GroupView);
+
+Activity.prototype.onBuild = function() {
+    console.log("Activity onBuild");
+}
+
+Activity.prototype.onCreate = function() {
+    console.log("Activity onCreate");
+}

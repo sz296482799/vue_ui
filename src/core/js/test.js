@@ -20,21 +20,22 @@ $(document).ready(function() {
     Appliction.addActivity("/test2", test2);
     Appliction.start("app");
 
-    Appliction.tiggerFunc("changeTest", "bbbb");
+    //Appliction.tiggerFunc("changeTest", "bbbb");
 });
 
 
 function TestActivity() {
-    Activity.call(this);
+    this.extends = Vue_Contorller.build(new Activity());
 }
-extend(TestActivity, Activity);
 
 TestActivity.prototype.onBuild = function() {
-    this.variables.teststr = "zshang";
-    this.addItem('button1', new Button("test1", null));//onMove onClick
-    this.addItem('button2', new Button("test2", null));
-    this.addItem('button3', new Button("test3", null));
-    this.addElement('<input type="text"> </input>');
+
+    Vue_Contorller.addVar(this, "teststr",  "zshang");
+
+    Vue_Contorller.addItem(this, 'button1', new Button("test1", null));//onMove onClick
+    Vue_Contorller.addItem(this, 'button2', new Button("test2", null));
+    Vue_Contorller.addItem(this, 'button3', new Button("test3", null));
+    Vue_Contorller.addElement(this, '<input type="text"> </input>');
 }
 
 TestActivity.prototype.onCreate = function() {
@@ -44,16 +45,17 @@ TestActivity.prototype.onCreate = function() {
 }
 
 function TestActivity2() {
-    Activity.call(this);
+    this.extends = Vue_Contorller.build(new Activity());
 }
-extend(TestActivity2, Activity);
 
 TestActivity2.prototype.onBuild = function() {
-    this.variables.teststr = "ggggggg";
-    this.addItem('button11', new testButton("test11", null));
-    this.addItem('button22', new Button("test22", null));
-    this.addItem('button33', new Button("test33", null));
-    this.addElement('<input type="text">{{teststr}}</input>');
+
+    Vue_Contorller.addVar(this, "teststr",  "ggggggg");
+
+    Vue_Contorller.addItem(this, 'button11', new Button("test11", null));
+    Vue_Contorller.addItem(this, 'button22', new Button("test22", null));
+    Vue_Contorller.addItem(this, 'button33', new Button("test33", null));
+    Vue_Contorller.addElement(this, '<input type="text">{{teststr}}</input>');
 }
 
 TestActivity2.prototype.onCreate = function() {

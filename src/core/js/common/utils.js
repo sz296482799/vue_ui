@@ -42,6 +42,23 @@ function isClassName(obj, name) {
     return false;
 }
 
+function isExtendsClass(e, n) {
+    while(isObject(e)) {
+        if(isClassName(e, n))
+            return true;
+        e = e.extends;
+    }
+    return false;
+}
+
+function isView(ui) {
+    return isExtendsClass(ui, View);
+}
+
+function isGroupView(ui) {
+    return isExtendsClass(ui, GroupView);
+}
+
 function extend(Child, Parent) {
     var F = function(){};
     F.prototype = Parent.prototype;
