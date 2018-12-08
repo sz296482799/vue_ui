@@ -12,12 +12,20 @@ var Appliction = (
         document.onkeyup = null;
         document.onkeydown = null;
 
-        var onAppKeyUp = function() {
-    
+        var onAppKeyUp = function(event) {
+            var activity = getActivity();
+
+            if(!isObject(activity) || !isFunction(activity.touchKeyUp) || !activity.touchKeyUp(event)) {
+                
+            }
         };
 
-        var onAppKeyDown = function() {
-    
+        var onAppKeyDown = function(event) {
+            var activity = getActivity();
+
+            if(!isObject(activity) || !isFunction(activity.touchKeyDown) || !activity.touchKeyDown(event)) {
+                
+            }
         };
 
         var start = function(id) {
@@ -28,14 +36,6 @@ var Appliction = (
                 return;
             
             _jqhtml = $("#" + id);
-            _jqhtml.css({
-                //"order": "0",
-                "display": "flex",
-                "flex-flow": "column",
-                //"justify-content": "flex-start",
-                //"align-items": "stret ch",
-                //"flex": "auto"
-            });
             _jqhtml.addClass("app");
 
             if(isArray(_router.routes) && _router.routes.length > 0) {
@@ -52,7 +52,7 @@ var Appliction = (
             vue = new Vue({
                 store: store,
                 router: router,
-                computed: computed,
+                computed: computed, 
                 created: function () {
                     document.onkeyup = onAppKeyUp;
                     document.onkeydown = onAppKeyDown;
@@ -112,9 +112,24 @@ var Appliction = (
             var component;
             if(isString(template))
                 component = { template: template,  data: function() {return {_activity_path: path}}};
-            else if(isObject(template)) {
+            else if(isActivity(template)) {
                 Vue_Contorller.addVar(template, "_activity_path", path);
                 component = Vue_Contorller.build(template);
+            }
+            else if(isObject(template) && isString(template.url)) {
+                component = function(resolve) {
+                    function LoadHtml (data) {
+                        var activity = new Activity();
+                        Vue_Contorller.addVar(activity, "_activity_path", path);
+                        Vue_Contorller.addElement(activity, data);
+                        resolve(Vue_Contorller.build(activity));
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: template.url,
+                        success: LoadHtml
+                    });
+                }
             }
 
             var route = {
@@ -140,12 +155,17 @@ var Appliction = (
         };
 
         var getActivity = function(path) {
-            if(!isString(path) || !isStart || !isObject(vue))
+            if(!isStart || !isObject(vue))
+                return;
+
+            if(!isString(path) && isObject(vue._route) && isString(vue._route.path))
+                path = vue._route.path;
+            else
                 return;
 
             if(vue.$children) {
                 for (var i = 0; i < vue.$children.length; i++) {
-                    if(vue.$children[i]._activity_path === path) {
+                    if(vue.$children[i]._data._activity_path === path) {
                         return vue.$children[i];
                     }
                 }

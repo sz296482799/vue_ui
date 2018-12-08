@@ -1,29 +1,42 @@
 'use strict'
 
-function Button(text, cssObj) {
+function Button(text, cssObj, eventObj, isCom) {
     this.extends = Vue_Contorller.build(new GroupView());
-    this.text = text;
-    this.cssObj = cssObj;
-}
 
-Button.prototype.onBuild = function() {
+    if(!isCom) {
+        Vue_Contorller.addVar(this, "itext", text);
+        Vue_Contorller.addVar(this, "iCssObj", cssObj);
+        if(isObject(eventObj)) {
+            if(isFunction(eventObj.click))
+                Vue_Contorller.addMethod(this, "iclick", eventObj.click);
+        }
+    }
+    Vue_Contorller.addVar(this, "sClass", "");
 
-    Vue_Contorller.addVar(this, "itext", this.text);
-    Vue_Contorller.addVar(this, "canFocus", true);
-    Vue_Contorller.addVar(this, "isFocus", false);
-    Vue_Contorller.addVar(this, "iCssObj", this.cssObj);
     Vue_Contorller.addVar(this, "mCssObj", {focus: "item_button_focus", nofocus: "item_button_nofocus"});
-
-    Vue_Contorller.addMethod(this, "getElement", function() {
-        return $("#" + this.vid);
-    });
-
-    Vue_Contorller.addComputed(this, "sClass", function () {
-        if(this.isFocus)
-            return (this.iCssObj && this.iCssObj.focus) || this.mCssObj.focus;
+    Vue_Contorller.addMethod(this, "onFocus", function(b) {
+        if(b)
+            this.sClass = (this.iCssObj && this.iCssObj.focus) || this.mCssObj.focus;
         else
-            return (this.iCssObj && this.iCssObj.nofocus) || this.mCssObj.nofocus;
+            this.sClass = (this.iCssObj && this.iCssObj.nofocus) || this.mCssObj.nofocus;
+        return true;
     });
 
-    Vue_Contorller.addElement(this, '<div :id="vid" v-text="itext" :class="sClass"></div>');
+    Vue_Contorller.addMethod(this, "setText", function(text) {
+        if(isString(text))
+            this.itext = text;
+    });
+
+    Vue_Contorller.addMethod(this, "getText", function() {
+        return this.itext;
+    });
+
+    Vue_Contorller.addComputed(this, "sClick", function () {
+        return this.iclick || function() {};
+    });
+    Vue_Contorller.addAttribute(this, ':id="vid" @click="sClick" :class="sClass"');
+    if(!isCom)
+        Vue_Contorller.addAttribute(this, 'v-text="itext"');
+    //Vue_Contorller.addElement(this, '<div :id="vid" @click="sClick" v-text="itext" :class="sClass"></div>');
 }
+Vue.component('vbutton', Vue_Contorller.build(new Button(null, null, null, true)));

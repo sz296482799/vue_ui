@@ -35,6 +35,13 @@ function isUndefined(val) {
     return false;
 }
 
+function isNumber(val) {
+    if( jQuery.type( val ) === "number" ) {
+        return true;
+    }
+    return false;
+}
+
 function isClassName(obj, name) {
     if(obj instanceof name) {
         return true;
@@ -57,6 +64,10 @@ function isView(ui) {
 
 function isGroupView(ui) {
     return isExtendsClass(ui, GroupView);
+}
+
+function isActivity(ui) {
+    return isExtendsClass(ui, Activity);
 }
 
 function extend(Child, Parent) {
