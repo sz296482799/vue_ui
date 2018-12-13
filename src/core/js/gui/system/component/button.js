@@ -11,6 +11,15 @@ function Button(text, cssObj, eventObj, isCom) {
                 Vue_Contorller.addMethod(this, "iclick", eventObj.click);
         }
     }
+    else {
+        Vue_Contorller.addProps(this, 'name', {
+            type: String,
+            required: true
+        });
+        Vue_Contorller.addComputed(this, "item_name_", function () {
+            return this.name || "unknow_name";
+        });
+    }
     Vue_Contorller.addVar(this, "sClass", "");
 
     Vue_Contorller.addVar(this, "mCssObj", {focus: "item_button_focus", nofocus: "item_button_nofocus"});

@@ -98,38 +98,23 @@ var Appliction = (
             };
         };
 
-        var setRoute = function(path, template) {
+        var setRoute = function(path, data) {
             if(isStart)
                 return;
 
             if(!path) path = '';
-            if(!isString(path) || (!isString(template) && !isObject(template)))
+            if(!isString(path) || (!isString(data) && !isObject(data)))
                 return;
 
             if(!_router.routes)
                 _router.routes = new Array();
 
             var component;
-            if(isString(template))
-                component = { template: template,  data: function() {return {_activity_path: path}}};
-            else if(isActivity(template)) {
-                Vue_Contorller.addVar(template, "_activity_path", path);
-                component = Vue_Contorller.build(template);
-            }
-            else if(isObject(template) && isString(template.url)) {
-                component = function(resolve) {
-                    function LoadHtml (data) {
-                        var activity = new Activity();
-                        Vue_Contorller.addVar(activity, "_activity_path", path);
-                        Vue_Contorller.addElement(activity, data);
-                        resolve(Vue_Contorller.build(activity));
-                    }
-                    $.ajax({
-                        type: "POST",
-                        url: template.url,
-                        success: LoadHtml
-                    });
-                }
+            if(isString(data))
+                component = { template: data,  data: function() {return {_activity_path: path}}};
+            else if(isActivity(data)) {
+                Vue_Contorller.addVar(data, "_activity_path", path);
+                component = Vue_Contorller.build(data);
             }
 
             var route = {

@@ -19,8 +19,6 @@ function LinearLayout(orientation, type, isCom) {
             }
         });
     }
-    
-    
 }
 
 LinearLayout.prototype.onCreate = function() {

@@ -68,12 +68,27 @@ function GroupView() {
     });
     Vue_Contorller.addMethod(this, "getItem", function(name) {
         var vue = this; //vue call this function
-        if(vue.$children) {
+        var items = new Array();
+
+        if(vue.item_name_ === name)
+            items.push(vue);
+        
+        if(isArray(vue.$children)) {
             for (var i = 0; i < vue.$children.length; i++) {
-                if(vue.$children[i].item_name_ === name) {
-                    return vue.$children[i];
+                if(isFunction(vue.$children[i].getItem)) {
+                    var tmp = vue.$children[i].getItem(name);
+                    if(isArray(tmp)) {
+                        items = items.concat(tmp);
+                    }
+                }
+                else {
+                    if(vue.$children[i].item_name_ === name)
+                        items.push(vue.$children[i]);
                 }
             }
         }
+        if(items.length > 0)
+            return items;
+        return null;
     });
 }

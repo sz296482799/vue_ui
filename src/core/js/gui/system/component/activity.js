@@ -34,7 +34,7 @@ function Activity() {
 }
 
 Activity.prototype.onCreate = function() {
-    console.log("Activity onCreate:" + this.activity_path);
+    console.log("Activity onCreate:" + this._data._activity_path);
     this.$el.classList.add("activity");
     this.tryFocus();
 }

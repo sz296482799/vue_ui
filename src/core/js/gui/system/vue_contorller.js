@@ -43,12 +43,26 @@ var Vue_Contorller = (
             ui.data[name] = build(obj);
         };
 
+        var syncLoadHtml = function(url, timeout) {
+            var response = $.ajax({url:url, async:false, dataType:"html", timeout: timeout, global:false});
+            return response.responseText;
+        }
+
         var addElement = function(ui, str) {
             if(!isView(ui) || !isString(str))
                 return;
+            if(str.charAt(0) === '@') {
+                str = syncLoadHtml(str.slice(1), 1000);
+            }
             if(!isClassName(ui.template, StringBuffer))
                 _html(ui);
             _addHtml(ui, str);
+        };
+
+        var clearElement = function(ui) {
+            if(!isView(ui) || !isString(str) || !isClassName(ui.template, StringBuffer))
+                return;
+            _html(ui);
         };
 
         var addAttribute = function(ui, str) {
@@ -80,6 +94,7 @@ var Vue_Contorller = (
                 return null;
 
             var attribute = isClassName(ui.attribute, StringBuffer) ? ui.attribute.ToString() : "";
+            ui.attribute = null;
             var tmp =  _htmlToString(ui);
             _html(ui, '<div ' + attribute + '>');
             if(isString(tmp))

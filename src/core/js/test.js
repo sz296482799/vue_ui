@@ -19,35 +19,12 @@ $(document).ready(function() {
     var test2 = new TestActivity2();
     Appliction.addActivity("/test2", test2);
 
-    Appliction.addActivity("/test3", {url:"core/js/test.html"});
+    Appliction.addActivity("/test3", new LoadHtmlActivity());
 
     Appliction.start("app");
 
     //Appliction.tiggerFunc("changeTest", "bbbb");
 });
-
-function LineGroupView() {
-    this.extends = Vue_Contorller.build(new LinearLayout("horizontal"));
-}
-
-LineGroupView.prototype.onBuild = function() {
-    
-    Vue_Contorller.addItem(this, 'button1', new Button("test1", null, {
-        click: function(e) {
-            this.tryFocus();
-        },
-    }));//onMove onClick
-    Vue_Contorller.addItem(this, 'button2', new Button("test2", null, {
-        click: function(e) {
-            this.tryFocus();
-        },
-    }));
-    Vue_Contorller.addItem(this, 'button3', new Button("test3", null, {
-        click: function(e) {
-            this.tryFocus();
-        },
-    }));
-}
 
 function TestActivity() {
     this.extends = Vue_Contorller.build(new LinearActivity());
@@ -119,11 +96,13 @@ TestActivity.prototype.onBuild = function() {
 TestActivity.prototype.onCreate = function() {
     var vue = this;
 
-    vue.getItem('line2').tryFocus();
+    vue.getItem('line2')[0].tryFocus();
+
+    vue.getItem('button1')[2].tryFocus();
 }
 
 function TestActivity2() {
-    this.extends = Vue_Contorller.build(new LinearActivity("horizontal"));
+    this.extends = Vue_Contorller.build(new LinearActivity());
 }
 
 TestActivity2.prototype.onBuild = function() {
@@ -151,3 +130,15 @@ TestActivity2.prototype.onBuild = function() {
 TestActivity2.prototype.onCreate = function() {
     Appliction.tiggerFunc("changeTest", "cccc");
 }
+
+function LoadHtmlActivity() {
+    this.extends = Vue_Contorller.build(new LinearActivity());
+    Vue_Contorller.addElement(this, "@core/js/test.html");
+}
+
+LoadHtmlActivity.prototype.onCreate = function() {
+    this.getItem('test1')[2].tryFocus();
+}
+
+
+
