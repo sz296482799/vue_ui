@@ -26,6 +26,30 @@ var Vue_Contorller = (
             return ui.template;
         };
 
+        var _strUnique = function(str) {
+            var ret = [];
+            str.replace(/[^ ]+/g, function(x1, x2){
+                (str.indexOf(x1)==x2) && ret.push(x1);
+            });
+            return ret.join(' ');
+        }
+
+        var _getAttribute = function(template, name) {
+            var reg = new RegExp(name + '=\"([a-zA-Z0-9 ]*)\"');
+            var attr = reg.exec(template);
+            if(attr && attr.length > 1)
+                return attr[1];
+            return "";
+        };
+
+        var _getClass = function(ui) {
+            if(!isView(ui))
+                return "";
+            if(!isString(ui.template))
+                return _getClass(ui.extends);
+            return _getClass(ui.extends) + _getAttribute(ui.template, "class");
+        };
+
         var addVar = function(ui, name, value) {
             if(!isView(ui) || !isString(name))
                 return;
@@ -37,10 +61,19 @@ var Vue_Contorller = (
         var addItem = function(ui, name, obj) {
             if(!isGroupView(ui) || !isString(name) || !isObject(obj))
                 return;
+            if(!isObject(ui.data)) {
+                ui.data = new Object();
+            }
+            if(!isNumber(ui.data.view_count))
+                ui.data.view_count = 0;
+            if(!isObject(ui.data.views))
+                ui.data.views = new Object();
             if(!isObject(ui.data[name]))
-                addElement(ui, '<component :is=\"' + name + '\" ></component>');
+                addElement(ui, '<component :is="views.' + name + '" ></component>');
             addVar(obj, "item_name_", name);
-            ui.data[name] = build(obj);
+            addVar(obj, "view_index", ui.data.view_count);
+            ui.data.views[name] = build(obj);
+            ui.data.view_count++;
         };
 
         var syncLoadHtml = function(url, timeout) {
@@ -65,12 +98,26 @@ var Vue_Contorller = (
             _html(ui);
         };
 
-        var addAttribute = function(ui, str) {
+        var setLabel = function(ui, str) {
             if(!isView(ui) || !isString(str))
                 return;
-            if(!isClassName(ui.attribute, StringBuffer))
-                ui.attribute = new StringBuffer();
-            ui.attribute.Append(str + ' ');
+            ui.label = str;
+        };
+
+        var setHasSlot = function(ui, flag) {
+            if(!isView(ui))
+                return;
+            ui.isHasSlot = flag;
+        };
+
+        var addClass = function(ui, str) {
+            if(!isView(ui) || !isString(str))
+                return;
+            if(!isClassName(ui.class, StringBuffer)) {
+                ui.class = new StringBuffer();
+                ui.class.Append('class="');
+            }
+            ui.class.Append(str + ' ');
         };
 
         var addAttribute = function(ui, str) {
@@ -92,17 +139,27 @@ var Vue_Contorller = (
         var build = function(ui) {
             if(!isView(ui))
                 return null;
+            if(!isString(ui.label))
+                ui.label = "div";
 
             var attribute = isClassName(ui.attribute, StringBuffer) ? ui.attribute.ToString() : "";
             ui.attribute = null;
+
+            addClass(ui, _strUnique(_getClass(ui)));
+            addClass(ui, '"');
+            var mClass = isClassName(ui.class, StringBuffer) ? ui.class.ToString() : "";
+
+            ui.class = null;
+
             var tmp =  _htmlToString(ui);
-            _html(ui, '<div ' + attribute + '>');
+            _html(ui, '<' + ui.label + ' ' + attribute + ' ' + mClass + ' >');
             if(isString(tmp))
                 _addHtml(ui, tmp);
             if(isFunction(ui.onBuild))
                 ui.onBuild();
-            _addHtml(ui, "<slot></slot>");
-            _addHtml(ui, "</div>");
+            if(ui.isHasSlot)
+                _addHtml(ui, "<slot></slot>");
+            _addHtml(ui, '</' + ui.label + '>');
             _htmlToString(ui);
 
             if(isFunction(ui.onCreate)) {
@@ -149,7 +206,10 @@ var Vue_Contorller = (
             addVar: addVar,
             addItem: addItem,
             addElement: addElement,
+            addClass: addClass,
             addAttribute: addAttribute,
+            setLabel: setLabel,
+            setHasSlot: setHasSlot,
             addProps: addProps,
             build: build,
             addMethod: addMethod,

@@ -5,9 +5,10 @@ function Activity() {
     Vue_Contorller.addMethod(this, "getFocus", function() {
         var focus = this;
         while(isObject(focus) && focus.$children.length > 0 
-            && focus._data._indexFource >= 0
-            && focus._data._indexFource < focus.$children.length) {
-            focus = focus.$children[focus._data._indexFource];
+            && focus.indexFource >= 0
+            && focus.indexFource < focus.$children.length
+            && isFunction(focus.getChildren)) {
+            focus = focus.getChildren();
         }
         return focus;
     });
@@ -31,11 +32,11 @@ function Activity() {
         }
         return false;
     });
+    Vue_Contorller.addClass(this, "activity");
 }
 
 Activity.prototype.onCreate = function() {
     console.log("Activity onCreate:" + this._data._activity_path);
-    this.$el.classList.add("activity");
     this.tryFocus();
 }
 

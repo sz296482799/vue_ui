@@ -93,7 +93,6 @@ var Appliction = (
                 for(var i = 1; i < arguments.length; i++)
                     cmd.Append(", arguments[" + i + "]");
                 cmd.Append(")");
-                var temp = cmd.ToString();
                 eval(cmd.ToString());
             };
         };
