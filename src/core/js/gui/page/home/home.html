@@ -1,15 +1,8 @@
 <listview :items="views" style="height: 100%;" >
-    <template v-if="1 === 1">
-        <div slot-scope="{item}" class="list_text">
-            {{item[index].name}}
-        </div>
-    </template>
-    <template v-else>
-        <listview orientation="h" slot-scope="{item}" >
-            <vbutton slot-scope="{item}" :name="item.name" class="list_icon" cssObj="list_item" >
-                <img class="in_pic" src="img/0_1.png">
-                <div class="list_text">{{item.name}}</div>
-            </vbutton>
-        </listview>
-    </template>
+    <listview orientation="h" slot-scope="{item}" :items="item" >
+        <vbutton slot-scope="{item}" :name="item.name" class="list_icon" cssObj="list_item" >
+            <img class="in_pic" src="img/0_1.png">
+            <div class="list_text">{{item.name}}</div>
+        </vbutton>
+    </listview>
 </listview>

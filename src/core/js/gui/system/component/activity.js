@@ -1,8 +1,9 @@
 'use strict'
 
 function Activity() {
-    this.extends = Vue_Contorller.build(new GroupView());
-    Vue_Contorller.addMethod(this, "getFocus", function() {
+    extendStaticFunc(this, VuePrototype);
+    this.extend(new GroupView());
+    this.addMethod("getFocus", function() {
         var focus = this;
         while(isObject(focus) && focus.$children.length > 0 
             && focus.indexFource >= 0
@@ -12,7 +13,7 @@ function Activity() {
         }
         return focus;
     });
-    Vue_Contorller.addMethod(this, "touchKeyUp", function(event) {
+    this.addMethod("touchKeyUp", function(event) {
         var focus = this.getFocus();
 
         while(isObject(focus)) {
@@ -22,7 +23,7 @@ function Activity() {
         }
         return false;
     });
-    Vue_Contorller.addMethod(this, "touchKeyDown", function(event) {
+    this.addMethod("touchKeyDown", function(event) {
         var focus = this.getFocus();
 
         while(isObject(focus)) {
@@ -32,7 +33,7 @@ function Activity() {
         }
         return false;
     });
-    Vue_Contorller.addClass(this, "activity");
+    this.addClass("activity");
 }
 
 Activity.prototype.onCreate = function() {
@@ -41,5 +42,6 @@ Activity.prototype.onCreate = function() {
 }
 
 function LinearActivity(orientation) {
-    this.extends = Vue_Contorller.build(new LinearLayout(orientation, Activity));
+    extendStaticFunc(this, VuePrototype);
+    this.extend(new LinearLayout(orientation, Activity));
 }

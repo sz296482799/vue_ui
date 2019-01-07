@@ -1,27 +1,17 @@
 'use strict'
 
-function LinearLayout(orientation, type, isCom) {
+function LinearLayout(orientation, type) {
+    extendStaticFunc(this, VuePrototype);
     if(!isFunction(type))
         type = GroupView;
-    this.extends = Vue_Contorller.build(new type());
+    this.extend(new type());
 
-    if(!isCom) {
-        var ori = "v";//vertical
-        if(orientation === "horizontal")
-            ori = "h";
-        Vue_Contorller.addVar(this, "orientation", ori);
-    }
-    else {
-        Vue_Contorller.addProps(this, 'orientation', {
-            default: 'v',
-            validator: function (value) {
-                return ['v', 'h'].indexOf(value) !== -1;
-            }
-        });
-        Vue_Contorller.setHasSlot(this, true);
-    }
+    var ori = "v";//vertical
+    if(orientation === "horizontal")
+        ori = "h";
+    this.addVar("orientation", ori);
 
-    Vue_Contorller.addWatch(this, 'indexFource', function(index, oldIndex) {
+    this.addWatch('indexFource', function(index, oldIndex) {
         if(isFunction(this.list_select)) {
             if(oldIndex !== -1)
                 this.list_select(oldIndex, false);
@@ -106,4 +96,4 @@ LinearLayout.prototype.onKeyDown = function(event) {
     
     return ret;
 }
-Vue.component('linear-layout', Vue_Contorller.build(new LinearLayout(null, null, true)));
+

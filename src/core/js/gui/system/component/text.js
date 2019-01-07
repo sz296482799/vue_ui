@@ -1,13 +1,12 @@
 'use strict'
 
-function Image(src, css) {
+function Text(text, css) {
     extendStaticFunc(this, VuePrototype);
     this.extend(new View());
 
-    this.addVar("tag", "img");
-    this.addVar("src", src);
+    this.addVar("text", text);
     this.addVar("css", css);
 
-    this.addAttribute(":src", "src");
+    this.addAttribute("v-text", "text");
     this.addAttribute(":class", "css");
 }

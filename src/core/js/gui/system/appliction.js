@@ -112,8 +112,8 @@ var Appliction = (
             if(isString(data))
                 component = { template: data,  data: function() {return {_activity_path: path}}};
             else if(isActivity(data)) {
-                Vue_Contorller.addVar(data, "_activity_path", path);
-                component = Vue_Contorller.build(data);
+                data.addVar("_activity_path", path);
+                component = data.build();
             }
 
             var route = {

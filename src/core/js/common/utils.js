@@ -78,6 +78,16 @@ function extend(Child, Parent) {
     Child.uber = Parent.prototype;
 }
 
+function extendStaticFunc(child, functions) {
+    if(!isObject(child)) 
+        child = new Object();
+    for(var key in functions) {
+        if(isFunction(functions[key])) {
+            child[key] = functions[key];
+        }
+    }
+}
+
 function deepCopy(p, c) {
     var c = c || {};
     for (var i in p) {

@@ -1,13 +1,14 @@
 'use strict'
 
 function View() {
-    Vue_Contorller.addVar(this, "vid", "view_unknow");
-    Vue_Contorller.addVar(this, "staticClass", "view_unknow");
-    Vue_Contorller.addMethod(this, "getElement", function() {
+    extendStaticFunc(this, VuePrototype);
+    
+    this.addVar("vid", "view_unknow");
+    this.addMethod("getElement", function() {
         return $("#" + this.vid);
     });
 
-    Vue_Contorller.addMethod(this, "setFocusCss", function(cssObj) {
+    this.addMethod("setFocusCss", function(cssObj) {
         if(isString(cssObj)) {
             this.mCssObj = {focus: cssObj + "_focus", nofocus: cssObj + "_nofocus"};
         }
@@ -16,9 +17,12 @@ function View() {
         }
     });
 
-    Vue_Contorller.addVar(this, "isFocus", false);
-    Vue_Contorller.addMethod(this, "setFocus", function(b) {
-        if(isFunction(this.onFocus)) {
+    this.addVar("isFocus", false);
+    this.addMethod("setFocus", function(b) {
+        if(!this.isVisible)
+            return false;
+        if(b !== this.isFocus) {
+            this.isFocus = b;
             if(isObject(this.mCssObj)) {
                 if(b) {
                     if(isString(this.mCssObj.nofocus))
@@ -33,17 +37,24 @@ function View() {
                         addClass(this.$el, this.mCssObj.nofocus);
                 }
             }
-            this.isFocus = this.onFocus(b);
-            return this.isFocus;
+
+            if(isFunction(this.onFocus))
+                return this.onFocus(b);
         }
         return false;
     });
 
-    Vue_Contorller.addMethod(this, "addClass", function(str) {
+    this.addVar("isVisible", true);
+    this.addAttribute("v-show", "isVisible");
+    this.addMethod("setVisible", function(b) {
+        this.isVisible = b;
+    });
+
+    this.addMethod("addClass", function(str) {
         addClass(this.$el, str);
     });
 
-    Vue_Contorller.addClass(this, "view");
+    this.addClass("view");
 }
 
 View.prototype.onCreate = function() {

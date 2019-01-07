@@ -1,28 +1,30 @@
 'use strict'
 
 function GroupView() {
-    this.extends = Vue_Contorller.build(new View());
+    extendStaticFunc(this, VuePrototype);
+    this.extend(new View());
 
-    Vue_Contorller.addVar(this, "indexFource", -1);
-    Vue_Contorller.addMethod(this, "setItem", function(name, view) {
+    this.addVar("indexFource", -1);
+    this.addMethod("setItem", function(name, view) {
         if(isObject(this.views[name])) {
             var data = this.views[name].data();
-            Vue_Contorller.addVar(view, "item_name_", name);
-            Vue_Contorller.addVar(view, "view_index", data.view_index);
-            this.views[name] = Vue_Contorller.build(view);
+            VueContorller.addVar(view, "item_name_", name);
+            VueContorller.addVar(view, "view_index", data.view_index);
+            this.views[name] = VueContorller.build(view);
         }
         else {
-            
-            Vue_Contorller.addVar(view, "item_name_", name);
-            Vue_Contorller.addVar(view, "view_index", this.view_count);
-            this.views[name] = Vue_Contorller.build(view);
+            VueContorller.addVar(view, "item_name_", name);
+            VueContorller.addVar(view, "view_index", this.view_count);
+            this.views[name] = VueContorller.build(view);
             this.view_count++;
-            this.$createElement("component", {is:"views." + name});
         }
     });
-    Vue_Contorller.addMethod(this, "getChildren", function(index) {
-        if(!isNumber(index))
+    this.addMethod("getChildren", function(index) {
+        if(!isNumber(index)) {
+            if(this.indexFource == -1)
+                return null;
             index = this.indexFource;
+        }
         if(index < this.$children.length && this.$children.length > 0) {
             for (var i = 0; i < this.$children.length; i++) {
                 if(this.$children[i].view_index === index) {
@@ -32,11 +34,14 @@ function GroupView() {
         }
         return null;
     });
-    Vue_Contorller.addMethod(this, "tryFocus", function(isReport) {
+    this.addMethod("tryFocus", function(isReport) {
         if(!this._isMounted) {
             return false;
         }
         var ret = false;
+
+        if(!this.isVisible)
+            return ret;
 
         if(isFunction(this.setFocus) && this.setFocus(true)) {
             ret = true;
@@ -79,15 +84,8 @@ function GroupView() {
                     if(parent.indexFource !== index && parent.indexFource !== -1) {
                         if(!isFunction(parent.getChildren))
                             continue;
-                        var next = parent.getChildren();
-                        while(isObject(next)) {
-                            if(isFunction(next.setFocus))
-                                next.setFocus(false);
-                            if(isNumber(next.indexFource) && next.indexFource !== -1) 
-                                next = isFunction(next.getChildren) ? next.getChildren() : null;
-                            else
-                                break;
-                        }
+
+                        this.removeFource(parent.getChildren());
                     }
                     parent.indexFource = index;
                     if(isFunction(parent.setFocus))
@@ -100,7 +98,17 @@ function GroupView() {
         }
         return ret;
     });
-    Vue_Contorller.addMethod(this, "getItem", function(name) {
+    this.addMethod("removeFource", function(child) {
+        while(isObject(child)) {
+            if(isFunction(child.setFocus))
+                child.setFocus(false);
+            if(isNumber(child.indexFource) && child.indexFource !== -1) 
+                child = isFunction(child.getChildren) ? child.getChildren() : null;
+            else
+                break;
+        }
+    });
+    this.addMethod("getItem", function(name) {
         var vue = this; //vue call this function
         var items = new Array();
 
